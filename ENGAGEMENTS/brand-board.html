@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shokunin Cockpit — Brand V2 board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --teal-50:#EEF6F5;--teal-100:#D6EAE7;--teal-200:#AFD6D1;--teal-300:#80BBB4;--teal-400:#4E9A92;
+    --teal-500:#2C7F78;--teal-600:#1C6E6A;--teal-700:#155E5A;--teal-800:#134E4A;--teal-900:#103F3C;--teal-950:#0A2A28;
+    --n-0:#FFFFFF;--n-50:#F7F6F2;--n-100:#EDEBE3;--n-200:#E3E0D8;--n-300:#D3CFC4;--n-400:#A8A498;
+    --n-500:#807C70;--n-600:#6B6960;--n-700:#4B493F;--n-800:#3F3E39;--n-900:#26251F;--n-950:#191919;
+    --success:#0F9E6E;--success-tint:#E5F5EF;--success-on:#0A3D2E;
+    --warning:#B8740A;--warning-tint:#FBF1DF;--warning-on:#6E430A;
+    --error:#D6362F;--error-tint:#FBE9E8;--error-on:#7A211C;
+    /* themed surface tokens (light) */
+    --bg:var(--n-50);--surface:var(--n-0);--surface-2:var(--n-100);--border:var(--n-200);--border-2:var(--n-300);
+    --text:var(--n-950);--text-2:var(--n-800);--muted:var(--n-600);--faint:var(--n-400);
+    --pri-bg:var(--teal-600);--pri-bg-h:var(--teal-700);--pri-bg-a:var(--teal-800);--pri-fg:#fff;
+    --link:var(--teal-700);--ring:rgba(44,127,120,.45);
+    --su-fg:var(--success);--su-bg:var(--success-tint);--su-on:var(--success-on);
+    --wa-fg:var(--warning);--wa-bg:var(--warning-tint);--wa-on:var(--warning-on);
+    --er-fg:var(--error);--er-bg:var(--error-tint);--er-on:var(--error-on);
+    --br-fg:var(--teal-700);--br-bg:var(--teal-50);
+    --ne-fg:var(--n-600);--ne-bg:var(--n-100);
+  }
+  body.dark{
+    --bg:#131310;--surface:#1B1B17;--surface-2:#232320;--border:#34332C;--border-2:#45443B;
+    --text:#ECEAE1;--text-2:#D7D4C8;--muted:#A8A496;--faint:#75736A;
+    --pri-bg:var(--teal-500);--pri-bg-h:var(--teal-400);--pri-bg-a:var(--teal-300);--pri-fg:#06201E;
+    --link:var(--teal-300);--ring:rgba(78,154,146,.55);
+    --su-fg:#34D399;--su-bg:#0F2D24;--su-on:#9BE8CC;
+    --wa-fg:#F0B24A;--wa-bg:#2E2410;--wa-on:#F6D49A;
+    --er-fg:#F87171;--er-bg:#2E1714;--er-on:#F3B4B4;
+    --br-fg:var(--teal-300);--br-bg:var(--teal-950);
+    --ne-fg:#A8A496;--ne-bg:#232320;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;
+    font-size:14px;line-height:1.55;transition:background .2s,color .2s;}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 28px 64px;}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+  header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:8px;}
+  h1{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0;}
+  .lede{color:var(--muted);margin:6px 0 0;max-width:60ch;}
+  h2{font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+    margin:40px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .toggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    background:var(--surface);border:1px solid var(--border);color:var(--text-2);
+    border-radius:6px;padding:8px 12px;font-size:13px;font-weight:500;font-family:inherit;}
+  .toggle:hover{border-color:var(--border-2);}
+  /* ramp */
+  .ramp{display:grid;grid-template-columns:repeat(11,1fr);gap:0;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+  .ramp.neu{grid-template-columns:repeat(12,1fr);}
+  .sw{height:64px;display:flex;flex-direction:column;justify-content:flex-end;padding:6px;}
+  .sw span{font-size:10px;line-height:1.3;font-family:"JetBrains Mono",monospace;}
+  .cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .statline{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);}
+  .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;}
+  .pill{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;
+    font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
+  /* type scale */
+  .type div{margin:0 0 10px;}
+  .tlabel{font-size:11px;color:var(--faint);font-family:"JetBrains Mono",monospace;}
+  /* buttons */
+  .btnrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 14px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:6px;
+    font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;border:1px solid transparent;
+    transition:background .12s,border-color .12s,color .12s;line-height:1;}
+  .btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ring);}
+  .btn-pri{background:var(--pri-bg);color:var(--pri-fg);}
+  .btn-pri:hover{background:var(--pri-bg-h);}
+  .btn-pri:active{background:var(--pri-bg-a);}
+  .btn-sec{background:transparent;border-color:var(--pri-bg);color:var(--br-fg);}
+  .btn-sec:hover{background:var(--br-bg);}
+  .btn-ter{background:var(--surface);border-color:var(--border);color:var(--text-2);}
+  .btn-ter:hover{background:var(--surface-2);}
+  .btn-ghost{background:transparent;color:var(--br-fg);}
+  .btn-ghost:hover{background:var(--br-bg);}
+  .btn-dest{background:var(--error);color:#fff;}
+  .btn-dest:hover{filter:brightness(.93);}
+  .btn-link{background:transparent;color:var(--link);padding:0 4px;height:auto;}
+  .btn-link:hover{text-decoration:underline;}
+  .btn[disabled]{background:var(--surface-2);border-color:var(--border);color:var(--faint);cursor:not-allowed;}
+  .btn-sm{height:28px;padding:0 12px;font-size:13px;}
+  .btn-lg{height:44px;padding:0 20px;font-size:15px;}
+  .grid-btn{display:grid;grid-template-columns:160px 1fr;gap:14px 18px;align-items:center;}
+  .vname{font-size:13px;color:var(--muted);}
+  .vname b{display:block;color:var(--text);font-weight:600;font-size:14px;}
+  /* project card demo */
+  .pcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;max-width:420px;}
+  .pcard h3{margin:0;font-size:16px;font-weight:600;}
+  .pcard .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--border);font-size:13px;}
+  .pcard .row:first-of-type{border-top:none;}
+  .k{color:var(--muted);}
+  .v{font-weight:500;}
+  .note{color:var(--faint);font-size:12px;margin-top:10px;}
+  .legend{color:var(--muted);font-size:12px;margin:8px 0 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Shokunin Cockpit — Brand V2</h1>
+      <p class="lede">Teal monochrome, enriched. Warm-paper DNA, dual light/dark, built for a control surface where <span class="mono">VERIFIED ≠ DECLARED</span> must read at a glance.</p>
+    </div>
+    <button class="toggle" id="themeBtn" aria-label="Toggle theme">◐ <span id="themeLbl">Dark</span></button>
+  </header>
+
+  <h2>Brand ramp — teal (the one hue)</h2>
+  <div class="ramp" id="rampTeal"></div>
+  <p class="legend">Anchor <span class="mono">teal-600 #1C6E6A</span> = primary. Hover 700, pressed 800. 300/400 carry teal onto dark surfaces.</p>
+
+  <h2>Neutral ramp — warm stone (the paper DNA)</h2>
+  <div class="ramp neu" id="rampNeu"></div>
+  <p class="legend">Warm-tinted grays anchored on paper <span class="mono">#F4F3EE</span> and ink <span class="mono">#191919</span>.</p>
+
+  <h2>Status — semantic, status only (never decoration)</h2>
+  <div class="cards3">
+    <div class="statline"><span class="dot" style="background:var(--su-fg)"></span><div><b>VERIFIED</b> · done<div class="note">success — proof resolves</div></div></div>
+    <div class="statline"><span class="dot" style="background:var(--wa-fg)"></span><div><b>DECLARED</b> · stale<div class="note">amber — claimed, not proven</div></div></div>
+    <div class="statline"><span class="dot" style="background:var(--er-fg)"></span><div><b>BLOCKED</b> · invalid<div class="note">error</div></div></div>
+    <div class="statline"><span class="dot" style="background:var(--br-fg)"></span><div><b>IN-PROGRESS</b><div class="note">teal — active sprint</div></div></div>
+    <div class="statline"><span class="dot" style="background:var(--ne-fg)"></span><div><b>TODO</b> · missing<div class="note">neutral</div></div></div>
+  </div>
+
+  <h2>Gate chips — the honesty rule, made visual</h2>
+  <div class="btnrow">
+    <span class="pill" style="background:var(--su-bg);color:var(--su-on)">● Verified</span>
+    <span class="pill" style="background:var(--wa-bg);color:var(--wa-on)">● Declared</span>
+    <span class="pill" style="background:var(--er-bg);color:var(--er-on)">● Blocked</span>
+    <span class="pill" style="background:var(--br-bg);color:var(--br-fg)">● In-progress</span>
+    <span class="pill" style="background:var(--ne-bg);color:var(--ne-fg)">● Todo</span>
+  </div>
+  <p class="legend">A <em>declared</em> gate (amber) can never be mistaken for a <em>verified</em> one (green).</p>
+
+  <h2>Typography</h2>
+  <div class="type">
+    <div><span class="tlabel">Display · Inter 600 · 32/40</span><div style="font-size:32px;font-weight:600;letter-spacing:-.02em;line-height:1.25">Pilot agentic projects</div></div>
+    <div><span class="tlabel">H1 · Inter 600 · 24/32</span><div style="font-size:24px;font-weight:600;letter-spacing:-.02em">Project: Portfolio Website</div></div>
+    <div><span class="tlabel">H2 · Inter 600 · 20/28</span><div style="font-size:20px;font-weight:600">Current sprint &amp; gates</div></div>
+    <div><span class="tlabel">Body · Inter 400 · 14/22</span><div style="font-size:14px">Report page is moving from mock data to real CRM reads. The next action is verifying the endpoint against a real order.</div></div>
+    <div><span class="tlabel">Mono · JetBrains 400 · 13/20 — data, IDs, timestamps</span><div class="mono" style="font-size:13px">S2 · gate G1 · proof: reports/P4-code-report.md · 2026-06-24T13:12Z</div></div>
+  </div>
+
+  <h2>Buttons — full hierarchy &amp; states</h2>
+  <div class="grid-btn">
+    <div class="vname"><b>Primary</b>main action</div>
+    <div class="btnrow"><button class="btn btn-pri">Open project</button><button class="btn btn-pri">Hover</button><button class="btn btn-pri" disabled>Disabled</button><button class="btn btn-pri btn-sm">Small</button><button class="btn btn-pri btn-lg">Large</button></div>
+    <div class="vname"><b>Secondary</b>alt, still brand</div>
+    <div class="btnrow"><button class="btn btn-sec">View plan</button><button class="btn btn-sec" disabled>Disabled</button></div>
+    <div class="vname"><b>Tertiary</b>non-brand action</div>
+    <div class="btnrow"><button class="btn btn-ter">Cancel</button><button class="btn btn-ter">Filter</button><button class="btn btn-ter" disabled>Disabled</button></div>
+    <div class="vname"><b>Ghost</b>toolbar / inline</div>
+    <div class="btnrow"><button class="btn btn-ghost">↻ Refresh</button><button class="btn btn-ghost">Open file</button></div>
+    <div class="vname"><b>Destructive</b>irreversible (rare)</div>
+    <div class="btnrow"><button class="btn btn-dest">Remove project</button></div>
+    <div class="vname"><b>Link</b>inline nav</div>
+    <div class="btnrow"><button class="btn btn-link">proof ↗</button></div>
+  </div>
+
+  <h2>In context — a project card</h2>
+  <div class="pcard">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Portfolio Website</h3>
+      <span class="pill" style="background:var(--br-bg);color:var(--br-fg)">● In-progress</span>
+    </div>
+    <div class="row"><span class="k">Active sprint</span><span class="v mono">P4</span></div>
+    <div class="row"><span class="k">Next action</span><span class="v">Verify report endpoint</span></div>
+    <div class="row"><span class="k">Last handoff</span><span class="v mono">2026-06-24 13:12</span></div>
+    <div class="row"><span class="k">Gates</span><span class="v" style="display:flex;gap:6px">
+      <span class="pill" style="background:var(--su-bg);color:var(--su-on)">2 verified</span>
+      <span class="pill" style="background:var(--wa-bg);color:var(--wa-on)">1 declared</span>
+    </span></div>
+    <div style="margin-top:14px;display:flex;gap:10px"><button class="btn btn-pri btn-sm">Open</button><button class="btn btn-ter btn-sm">Handoff</button></div>
+  </div>
+</div>
+<script>
+  const ramps={
+    rampTeal:[['50','#EEF6F5','#134E4A'],['100','#D6EAE7','#134E4A'],['200','#AFD6D1','#134E4A'],['300','#80BBB4','#0A2A28'],['400','#4E9A92','#fff'],['500','#2C7F78','#fff'],['600','#1C6E6A','#fff'],['700','#155E5A','#fff'],['800','#134E4A','#fff'],['900','#103F3C','#fff'],['950','#0A2A28','#D6EAE7']],
+    rampNeu:[['0','#FFFFFF','#191919'],['50','#F7F6F2','#191919'],['100','#EDEBE3','#191919'],['200','#E3E0D8','#191919'],['300','#D3CFC4','#191919'],['400','#A8A498','#191919'],['500','#807C70','#fff'],['600','#6B6960','#fff'],['700','#4B493F','#fff'],['800','#3F3E39','#fff'],['900','#26251F','#fff'],['950','#191919','#F7F6F2']]
+  };
+  for(const id in ramps){const el=document.getElementById(id);el.innerHTML=ramps[id].map(([n,hex,fg])=>`<div class="sw" style="background:${hex};color:${fg}"><span>${n}<br>${hex}</span></div>`).join('');}
+  const btn=document.getElementById('themeBtn'),lbl=document.getElementById('themeLbl');
+  btn.addEventListener('click',()=>{const d=document.body.classList.toggle('dark');lbl.textContent=d?'Light':'Dark';});
+</script>
+</body>
+</html>
