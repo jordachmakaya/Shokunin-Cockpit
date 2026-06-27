@@ -76,7 +76,7 @@ for (const task of tasks) {
 }
 
 function parsePlan(content) {
-  const sprintHeadingRegex = /^##\s+(S\d+)\s+[—-]\s+(.+)$/gm
+  const sprintHeadingRegex = /^##\s+(S\d+)\s+[—-]\s+(\S.*)$/gm
   const sprintMatches = [...content.matchAll(sprintHeadingRegex)]
 
   return sprintMatches.map((match, index) => {
@@ -96,7 +96,7 @@ function parsePlan(content) {
 }
 
 function parseTasks(sprintBlock, sprintId, sprintTitle) {
-  const taskRegex = /^\s*-\s+`(T\d+\.\d+)`\s+(.+)(?:\n|$)/gm
+  const taskRegex = /^\s*-\s+`(T\d+\.\d+)`\s+(\S.*)(?:\n|$)/gm
   const matches = [...sprintBlock.matchAll(taskRegex)]
 
   const goal = extractField(sprintBlock, '- **Goal:**')
@@ -205,7 +205,7 @@ function getRepoSlug() {
     return sshMatch[1]
   }
 
-  const httpsMatch = output.match(/github\.com[:/](.+?\/.+?)(?:\.git)?$/)
+  const httpsMatch = output.match(/github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/)
   if (httpsMatch?.[1]) {
     return httpsMatch[1]
   }
