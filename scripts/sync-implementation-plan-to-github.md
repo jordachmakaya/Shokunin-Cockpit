@@ -1,8 +1,6 @@
 # Sync `IMPLEMENTATION_PLAN.md` to GitHub Issues
 
-This document explains how to write an `IMPLEMENTATION_PLAN.md` that can be parsed by the Shokunin Cockpit sync script, then converted into GitHub Issues.
-
-It also explains how to update existing GitHub Issues from the CLI when the implementation plan changes.
+This document explains how to write a Shokunin `IMPLEMENTATION_PLAN.md`, sync it to GitHub Issues, update generated issue bodies, and pull/check the current GitHub Issue state back into a local status report.
 
 The goal:
 
@@ -11,9 +9,10 @@ IMPLEMENTATION_PLAN.md
   → scripts/sync-plan-to-github-issues.mjs
   → GitHub Issues
   → optional GitHub Project
+  → status report for Shokunin Cockpit / CTO review
 ```
 
-The script creates or updates one GitHub Issue per task, for example:
+The script creates, updates, or checks one GitHub Issue per task, for example:
 
 ```txt
 T0.1 — Scaffold Nuxt + TypeScript strict
@@ -22,7 +21,7 @@ T1.1 — Config loader
 T2.2 — Gate honesty rule
 ```
 
-Each issue receives:
+Each generated issue receives:
 
 - a stable hidden marker;
 - sprint labels;
@@ -32,6 +31,12 @@ Each issue receives:
 - expected tests;
 - stop-check;
 - Shokunin proof rules.
+
+A GitHub Issue is not proof.
+
+PASS still requires implementation, tests, typecheck/build when applicable, reproducible proof, and a report.
+
+VERIFIED ≠ DECLARED.
 
 ---
 
@@ -48,6 +53,8 @@ my-project/
 
   CLAUDE/
     IMPLEMENTATION_PLAN.md
+    reports/
+      github-issues-status.json
 ```
 
 In this layout, the Git repository is `code_repository`, but the plan lives one level above, inside `CLAUDE`.
@@ -130,7 +137,7 @@ Close and reopen Git Bash after changing Windows environment variables.
 
 ### 2.3 Add GitHub Project scope if needed
 
-Only needed if you use the `--project` option.
+Only needed if you use project attachment.
 
 ```bash
 gh auth refresh -s project
@@ -168,23 +175,27 @@ The script infers the GitHub repository from `origin`.
 
 ---
 
-## 3. Create required GitHub labels
+## 3. Required GitHub labels
 
 GitHub refuses to create an issue with labels that do not already exist.
 
 Create the standard labels once per repo:
 
 ```bash
-gh label create "sprint:S0" --description "Sprint S0" --color "ededed"
-gh label create "sprint:S1" --description "Sprint S1" --color "ededed"
-gh label create "sprint:S2" --description "Sprint S2" --color "ededed"
-gh label create "sprint:S3" --description "Sprint S3" --color "ededed"
-
 gh label create "source:implementation-plan" --description "Generated from IMPLEMENTATION_PLAN.md" --color "0366d6"
 gh label create "shokunin" --description "Shokunin tracked task" --color "6f42c1"
 ```
 
-If you have more sprints, create the matching labels:
+Create the sprint labels used by the plan:
+
+```bash
+gh label create "sprint:S0" --description "Sprint S0" --color "ededed"
+gh label create "sprint:S1" --description "Sprint S1" --color "ededed"
+gh label create "sprint:S2" --description "Sprint S2" --color "ededed"
+gh label create "sprint:S3" --description "Sprint S3" --color "ededed"
+```
+
+If you have more sprints, create matching labels:
 
 ```bash
 gh label create "sprint:S4" --description "Sprint S4" --color "ededed"
@@ -197,7 +208,9 @@ If a label already exists, GitHub may return an error. That is safe to ignore.
 
 ## 4. `package.json` scripts
 
-If `IMPLEMENTATION_PLAN.md` is outside the repo in `../CLAUDE/`, use:
+### 4.1 Plan outside the repo in `../CLAUDE/`
+
+Use:
 
 ```json
 {
@@ -206,13 +219,17 @@ If `IMPLEMENTATION_PLAN.md` is outside the repo in `../CLAUDE/`, use:
     "github:plan:sync": "node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md",
     "github:plan:update:dry": "node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --update --dry-run",
     "github:plan:update": "node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --update",
+    "github:plan:status": "node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --status",
+    "github:plan:status:json": "node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --status --json-out ../CLAUDE/reports/github-issues-status.json",
     "github:plan:sync:project": "node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --project \"Shokunin Cockpit\"",
     "github:plan:update:project": "node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --update --project \"Shokunin Cockpit\""
   }
 }
 ```
 
-If `IMPLEMENTATION_PLAN.md` is inside the repo root, use:
+### 4.2 Plan inside the repo root
+
+Use:
 
 ```json
 {
@@ -221,15 +238,17 @@ If `IMPLEMENTATION_PLAN.md` is inside the repo root, use:
     "github:plan:sync": "node scripts/sync-plan-to-github-issues.mjs IMPLEMENTATION_PLAN.md",
     "github:plan:update:dry": "node scripts/sync-plan-to-github-issues.mjs IMPLEMENTATION_PLAN.md --update --dry-run",
     "github:plan:update": "node scripts/sync-plan-to-github-issues.mjs IMPLEMENTATION_PLAN.md --update",
+    "github:plan:status": "node scripts/sync-plan-to-github-issues.mjs IMPLEMENTATION_PLAN.md --status",
+    "github:plan:status:json": "node scripts/sync-plan-to-github-issues.mjs IMPLEMENTATION_PLAN.md --status --json-out CLAUDE/reports/github-issues-status.json",
     "github:plan:sync:project": "node scripts/sync-plan-to-github-issues.mjs IMPLEMENTATION_PLAN.md --project \"Shokunin Cockpit\"",
     "github:plan:update:project": "node scripts/sync-plan-to-github-issues.mjs IMPLEMENTATION_PLAN.md --update --project \"Shokunin Cockpit\""
   }
 }
 ```
 
-The `--project` scripts are optional.
+The project scripts are optional.
 
-Use them only if a GitHub Project with that name already exists and your `gh` token has the `project` scope.
+Use them only if a GitHub Project with that name already exists and your token has the `project` scope.
 
 ---
 
@@ -260,7 +279,7 @@ test -f scripts/sync-plan-to-github-issues.mjs && echo "SCRIPT OK" || echo "SCRI
 
 ## 6. Required `IMPLEMENTATION_PLAN.md` format
 
-The parser expects a specific Markdown structure.
+The parser expects a stable Markdown structure.
 
 Use this format:
 
@@ -270,6 +289,7 @@ Use this format:
 > Produced by `sprint-planner`.
 > Gate-driven: sprint N+1 does not start until sprint N's stop-check is VERIFIED.
 > VERIFIED ≠ DECLARED.
+> ID spine: plan task → GitHub issue → job file → job branch → commit → report → handoff.
 
 ---
 
@@ -279,7 +299,7 @@ Use this format:
 - **Who** — Who uses it.
 - **Success** — What success looks like.
 - **Binding constraint** — Main non-negotiable constraint.
-- **Out of scope** — What this V1 will not do.
+- **Out of scope** — What this version will not do.
 
 ---
 
@@ -323,8 +343,6 @@ Use this format:
 
 ## 7. Parser rules
 
-The script relies on these rules.
-
 ### 7.1 Sprint headings
 
 Each sprint must use an H2 heading:
@@ -333,19 +351,12 @@ Each sprint must use an H2 heading:
 ## S0 — Contract & fixtures
 ## S1 — Read-only project view
 ## S2 — Health & honesty
-## S3 — Brand design system
 ```
 
 Recommended separator:
 
 ```txt
 —
-```
-
-Recommended:
-
-```md
-## S0 — Contract & fixtures
 ```
 
 Avoid:
@@ -395,7 +406,23 @@ Avoid:
 
 The backticks around the task ID are required.
 
-### 7.3 Required sprint fields
+### 7.3 Multi-line tasks
+
+The updated parser supports multi-line task bodies.
+
+Example:
+
+```md
+- `T1.2` `server/api/projects/[id]/summary.get.ts`: aggregate currentState,
+  nextAction, handoff, and plan gates into one typed view model.
+  *(budget: ~2 files, session-fit: yes)*
+```
+
+The generated issue title still comes from the first task line.
+
+The generated issue body includes the full task block.
+
+### 7.4 Required sprint fields
 
 Each sprint should include:
 
@@ -420,154 +447,48 @@ The most important fields for issue generation are:
 
 ---
 
-## 8. Recommended implementation plan template
-
-Copy this template for new projects.
-
-```md
-# IMPLEMENTATION PLAN — <Project Name>
-
-> Produced by `sprint-planner` from `CLAUDE/INTENT.md`.
-> Gate-driven: sprint N+1 does not start until sprint N's stop-check is VERIFIED.
-> VERIFIED ≠ DECLARED.
-> ID spine: plan block → GitHub issue → job file → report file → handoff.
-
----
-
-## PRODUCT
-
-- **What** — <What the project builds.>
-- **Who** — <Who uses it.>
-- **Success** — <What success looks like in practical terms.>
-- **Binding constraint** — <Main constraint.>
-- **Out of scope** — <What must not be built in this version.>
-
----
-
-## Locked decisions (do not relitigate)
-
-| #  | Decision | Rationale |
-|----|----------|-----------|
-| Q1 | **Stack**: <stack> | <why> |
-| Q2 | **Data contract**: <contract> | <why> |
-| Q3 | **Testing gate**: <gate> | <why> |
-
----
-
-## S0 — Contract & foundation
-
-- **Goal:** <Freeze the contract before building features.>
-- **Scope:** <Schemas, fixtures, minimal utilities, setup.>
-- **Tasks:**
-  - `T0.1` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-  - `T0.2` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-- **Tests:** <Expected tests.>
-- **Stop-check (VERIFIED):** <Exact proof required.>
-- **Handoff:** <What the next session should open first.>
-
-## S1 — First vertical slice
-
-- **Goal:** <One usable end-to-end path.>
-- **Scope:** <API, UI, model, or integration needed for the slice.>
-- **Tasks:**
-  - `T1.1` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-  - `T1.2` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-- **Tests:** <Expected tests.>
-- **Stop-check (VERIFIED):** <Exact proof required.>
-- **Handoff:** <What the next session should open first.>
-
-## S2 — Risk / correctness gate
-
-- **Goal:** <Prove the riskiest behavior.>
-- **Scope:** <Validation, security, resilience, correctness, error handling.>
-- **Tasks:**
-  - `T2.1` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-  - `T2.2` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-- **Tests:** <Expected tests.>
-- **Stop-check (VERIFIED):** <Exact proof required.>
-- **Handoff:** <What the next session should open first.>
-
-## S3 — Polish / packaging
-
-- **Goal:** <Polish without changing proven behavior.>
-- **Scope:** <UI polish, docs, packaging, accessibility, final checks.>
-- **Tasks:**
-  - `T3.1` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-  - `T3.2` <Task title and details.>
-    *(budget: <small/medium>, session-fit: yes)*
-- **Tests:** <Expected tests.>
-- **Stop-check (VERIFIED):** <Exact proof required.>
-- **Handoff:** <Final state or next version entry point.>
-
----
-
-## Definition of Done
-
-- `pnpm typecheck` clean.
-- `pnpm test` green.
-- `pnpm build` green when applicable.
-- No `any`.
-- No secrets exposed.
-- Errors handled.
-- Stop-check proof pasted.
-- VERIFIED ≠ DECLARED.
-```
-
----
-
-## 9. Script contract
-
-The sync script must live here:
-
-```txt
-scripts/sync-plan-to-github-issues.mjs
-```
+## 8. CLI contract
 
 Expected CLI:
 
 ```bash
-node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH> [--dry-run] [--update] [--project "<PROJECT_NAME>"] [--comment-on-update]
+node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH> [options]
 ```
 
-Examples:
+Modes:
 
 ```bash
-node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --dry-run
-node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md
-node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --update --dry-run
-node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --update
-node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --project "Shokunin Cockpit"
+# create missing issues, skip existing issues
+node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH>
+
+# print create operations without writing
+node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH> --dry-run
+
+# update generated issue body/title/labels for existing issues
+node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH> --update
+
+# print update operations without writing
+node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH> --update --dry-run
+
+# pull/check current GitHub issue state
+node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH> --status
+
+# pull/check current GitHub issue state and write JSON
+node scripts/sync-plan-to-github-issues.mjs <PLAN_PATH> --status --json-out <OUTPUT_PATH>
 ```
 
-The script should:
+Optional:
 
-1. read the plan file;
-2. find sprint blocks like `## S0 — ...`;
-3. find tasks like ``- `T0.1` ...``;
-4. create one GitHub Issue per task;
-5. update existing GitHub Issues when `--update` is passed;
-6. add labels:
-   - `sprint:S0`
-   - `source:implementation-plan`
-   - `shokunin`
-7. add a hidden marker to each issue body:
-
-```html
-<!-- shokunin-plan-id:T0.1 -->
+```bash
+--project "<PROJECT_NAME>"
+--comment-on-update
+--limit <number>
+--help
 ```
-
-This marker makes the sync idempotent.
 
 ---
 
-## 10. First creation flow
+## 9. First creation flow
 
 Always run a dry-run first:
 
@@ -580,7 +501,7 @@ Expected output:
 ```txt
 Found 4 sprint(s), 15 task(s).
 
---- DRY RUN ISSUE ---
+--- DRY RUN CREATE ISSUE ---
 title: T0.1 — ...
 labels: sprint:S0, source:implementation-plan, shokunin
 ...
@@ -593,7 +514,8 @@ Before real sync, verify:
 - task titles are not cut;
 - labels match existing GitHub labels;
 - the plan path is correct;
-- no secret appears in generated issue bodies.
+- no secret appears in generated issue bodies;
+- hidden markers are present.
 
 After the dry-run is clean:
 
@@ -607,20 +529,18 @@ Expected:
 Found 4 sprint(s), 15 task(s).
 CREATED T0.1 — https://github.com/<owner>/<repo>/issues/1
 CREATED T0.2 — https://github.com/<owner>/<repo>/issues/2
-...
 ```
 
-If you rerun the command without `--update`, expected:
+If rerun without update mode, expected:
 
 ```txt
-SKIP T0.1 — issue already exists
-SKIP T0.2 — issue already exists
-...
+SKIP T0.1 — issue #1 already exists (OPEN)
+SKIP T0.2 — issue #2 already exists (OPEN)
 ```
 
 ---
 
-## 11. Updating existing GitHub Issues
+## 10. Updating existing GitHub Issues
 
 When `IMPLEMENTATION_PLAN.md` changes after the first sync, do not manually edit every GitHub Issue.
 
@@ -632,7 +552,16 @@ Dry-run first:
 pnpm github:plan:update:dry
 ```
 
-Review the output carefully.
+Expected output:
+
+```txt
+--- DRY RUN UPDATE ISSUE ---
+task: T1.2
+issue: #12 (OPEN) https://github.com/<owner>/<repo>/issues/12
+title: T1.2 — Render gate honesty state
+changes:
+- generated body differs from plan
+```
 
 Then run:
 
@@ -640,19 +569,14 @@ Then run:
 pnpm github:plan:update
 ```
 
-Update mode uses the hidden marker in each issue body:
-
-```html
-<!-- shokunin-plan-id:T0.1 -->
-```
-
-The marker lets the script find the existing issue for each task.
-
 Expected behavior:
 
 ```txt
-If issue exists:
+If issue exists and generated body/title/labels differ:
   UPDATE title/body/labels
+
+If issue exists and is already synced:
+  SKIP
 
 If issue does not exist:
   CREATE issue
@@ -661,26 +585,26 @@ If issue exists but is closed:
   keep it closed unless explicitly reopened manually
 ```
 
+The update uses the hidden marker in each issue body:
+
+```html
+<!-- shokunin-plan-id:T0.1 -->
+```
+
 Recommended rule:
 
-- use `github:plan:sync` for the first creation;
+- use `github:plan:sync` for first creation;
 - use `github:plan:update` after changing task wording, tests, stop-checks, or sprint goals;
 - do not use update mode to overwrite human proof comments;
-- proof should be added as comments, not edited into the generated body.
-
-The generated issue body is owned by `IMPLEMENTATION_PLAN.md`.
-
-Human execution evidence is owned by comments or linked reports.
+- proof should be added as comments or linked reports, not edited into the generated body.
 
 ---
 
-## 12. Commenting on update
+## 11. Commenting on update
 
 Optional.
 
-If the script supports `--comment-on-update`, it can add a short comment after updating an existing issue.
-
-Example CLI:
+If you want a short audit comment after each actual update:
 
 ```bash
 node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --update --comment-on-update
@@ -689,24 +613,201 @@ node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --u
 Recommended behavior:
 
 ```txt
-UPDATED T0.1 — issue #1
-COMMENTED T0.1 — issue #1
+UPDATED T1.2 — #12
+COMMENTED T1.2 — #12
 ```
 
 Use this sparingly.
 
 Do not comment on every update unless you want an explicit audit trail.
 
-Recommended rule:
+Recommended ownership:
 
 ```txt
-Body = generated plan state
+Generated body = plan state
 Comments = execution proof / review / sync notes
 ```
 
 ---
 
-## 13. Sync to a GitHub Project
+## 12. Pull/check issue status
+
+Use:
+
+```bash
+pnpm github:plan:status
+```
+
+This mode pulls/checks the current GitHub Issue state and compares it to `IMPLEMENTATION_PLAN.md`.
+
+It checks:
+
+- issue open / closed state;
+- exact issue number;
+- current labels;
+- assignees;
+- milestone;
+- project status when exposed by GitHub CLI;
+- comments summary;
+- proof signal in comments;
+- Shokunin state: `accepted`, `blocked`, `changes_requested`, or `unknown`;
+- divergence between generated issue body and the plan;
+- missing issues;
+- orphan issues;
+- duplicate issues;
+- issues closed while still present in the plan.
+
+Example output:
+
+```txt
+--- ISSUE STATUS SUMMARY ---
+synced: 10
+stale: 2
+missing: 1
+duplicates: 0
+closed but in plan: 1
+orphans: 1
+
+--- PLAN TASKS ---
+T0.1    #1    OPEN    synced              accepted           proof:1
+T0.2    #2    CLOSED  closed_but_in_plan  accepted           proof:1
+T1.1    —     missing missing_issue       unknown            proof:0
+T1.2    #8    OPEN    stale               changes_requested  proof:0
+
+--- ORPHAN ISSUES ---
+T9.1    #20   OPEN    https://github.com/<owner>/<repo>/issues/20
+```
+
+### 12.1 Status JSON output
+
+Use:
+
+```bash
+pnpm github:plan:status:json
+```
+
+Or directly:
+
+```bash
+node scripts/sync-plan-to-github-issues.mjs ../CLAUDE/IMPLEMENTATION_PLAN.md --status --json-out ../CLAUDE/reports/github-issues-status.json
+```
+
+The JSON report includes:
+
+```json
+{
+  "generatedAt": "2026-06-26T00:00:00.000Z",
+  "repo": "owner/repo",
+  "planPath": "/absolute/path/to/IMPLEMENTATION_PLAN.md",
+  "mode": "status",
+  "summary": {
+    "totalPlanTasks": 15,
+    "synced": 10,
+    "stale": 2,
+    "missingIssues": 1,
+    "duplicateIssues": 0,
+    "closedButInPlan": 1,
+    "orphanIssues": 1
+  },
+  "tasks": [],
+  "orphanIssues": []
+}
+```
+
+This is intended for Shokunin Cockpit or CTO review.
+
+### 12.2 Divergence rules
+
+An issue is `stale` when at least one generated field differs from the plan:
+
+- title differs from plan;
+- generated body differs from plan;
+- required labels are missing.
+
+An issue is `synced` when:
+
+- title matches the plan;
+- generated body matches the plan;
+- required labels are present;
+- issue is open.
+
+An issue is `closed_but_in_plan` when:
+
+- the issue is closed;
+- the task still exists in `IMPLEMENTATION_PLAN.md`.
+
+An issue is `missing_issue` when:
+
+- the task exists in the plan;
+- no issue with the matching hidden marker exists.
+
+An issue is `duplicate_issues` when:
+
+- more than one issue has the same hidden marker.
+
+An orphan issue is an issue with a Shokunin marker whose task ID no longer exists in the plan.
+
+### 12.3 Proof detection
+
+The script detects proof comments heuristically.
+
+A comment counts as proof when it includes one of these signals:
+
+```txt
+shokunin proof
+proof:
+pnpm typecheck
+pnpm test
+pnpm build
+verified ≠ declared
+verified != declared
+```
+
+This is not a PASS by itself.
+
+It is a signal that proof may exist in comments.
+
+The CTO must still verify the proof content.
+
+### 12.4 Shokunin state detection
+
+The script infers task state from labels first:
+
+```txt
+accepted
+blocked
+changes_requested
+```
+
+Recommended labels:
+
+```txt
+status:accepted
+status:blocked
+status:changes_requested
+```
+
+It can also infer state from comments containing an explicit line:
+
+```txt
+Shokunin status: accepted
+Shokunin status: blocked
+Shokunin status: changes_requested
+```
+
+If no explicit state is found:
+
+```txt
+unknown
+```
+
+Do not rely on natural-language comments for state.
+
+Use labels or explicit `Shokunin status:` lines.
+
+---
+
+## 13. GitHub Project sync
 
 Optional.
 
@@ -725,13 +826,19 @@ Then run:
 pnpm github:plan:sync:project
 ```
 
-To update existing issues and attach them to the project:
+To update existing generated issue bodies and attach newly created issues to the project:
 
 ```bash
 pnpm github:plan:update:project
 ```
 
-If the project does not exist or the token lacks the `project` scope, GitHub CLI will fail.
+Project attachment is secondary.
+
+If project sync fails but issues were created correctly, do not treat the whole sync as failed automatically.
+
+Project status support depends on what GitHub CLI exposes through issue JSON fields in the current environment.
+
+The script attempts to read project status when available and falls back safely when unavailable.
 
 ---
 
@@ -829,27 +936,19 @@ test -f scripts/sync-plan-to-github-issues.mjs && echo "SCRIPT OK" || echo "SCRI
 
 ### Dry-run task title is cut
 
-Example:
-
-```txt
-T1.2 — server/api/projects/[id]/summary.get.ts: aggregate currentState + nextAction +
-```
-
 Cause:
 
-The parser is only reading the first line of a multi-line task.
+The task first line is malformed, or the task ID does not follow the required format.
 
 Fix:
 
-Update the parser so it captures each task until the next task ID or the next sprint field.
-
-Recommended task format:
+Ensure task bullets start with:
 
 ```md
-- `T1.2` `server/api/projects/[id]/summary.get.ts`: aggregate currentState, nextAction,
-  handoff, and plan gates into one typed view model.
-  *(budget: ~2 files, session-fit: yes)*
+- `T1.2` Task title...
 ```
+
+The parser supports continuation lines after the first task line.
 
 ---
 
@@ -868,6 +967,38 @@ Expected marker:
 Fix:
 
 Add the marker manually to the issue body, or close the duplicate and rerun the update command.
+
+---
+
+### Status shows duplicate issues
+
+Cause:
+
+More than one issue contains the same marker.
+
+Fix:
+
+Inspect the duplicate issues manually.
+
+Keep the correct one and close/archive the duplicate.
+
+Do not run update mode until duplicates are resolved.
+
+---
+
+### Status shows closed issue still in plan
+
+Cause:
+
+The issue is closed but the task still exists in `IMPLEMENTATION_PLAN.md`.
+
+Possible fixes:
+
+- reopen the issue if the task is still active;
+- remove/defer the task from the plan if the task is no longer part of scope;
+- keep it closed only if the task is intentionally done and your process treats closed issues as completed tracking.
+
+The script does not reopen closed issues.
 
 ---
 
@@ -895,12 +1026,7 @@ Comments = human / agent execution evidence
 1. Create or confirm the GitHub repo.
 2. Create `CLAUDE/IMPLEMENTATION_PLAN.md`.
 3. Write the plan using the template above.
-4. Add the sync script:
-
-```txt
-scripts/sync-plan-to-github-issues.mjs
-```
-
+4. Add the sync script.
 5. Add `package.json` scripts.
 6. Authenticate GitHub CLI:
 
@@ -941,18 +1067,58 @@ pnpm github:plan:dry
 pnpm github:plan:sync
 ```
 
-12. After plan changes:
+12. Pull/check status:
+
+```bash
+pnpm github:plan:status
+pnpm github:plan:status:json
+```
+
+13. After plan changes:
 
 ```bash
 pnpm github:plan:update:dry
 pnpm github:plan:update
+pnpm github:plan:status
 ```
 
-13. Work from GitHub Issues.
+14. Work from GitHub Issues, but execute from Shokunin job files.
 
 ---
 
-## 16. Rule
+## 16. Recommended daily CTO check
+
+Run:
+
+```bash
+pnpm github:plan:status
+```
+
+Look for:
+
+- missing issues;
+- stale generated bodies;
+- closed issues still in plan;
+- orphan issues;
+- duplicate issues;
+- tasks with no proof comments;
+- tasks marked `changes_requested`;
+- tasks marked `blocked`.
+
+Then decide:
+
+```txt
+missing issue → sync/update plan
+stale issue → update dry-run, then update
+closed but in plan → reopen or update plan
+orphan issue → close/archive or restore task
+changes_requested → write follow-up job
+blocked → resolve blocker or ask owner
+```
+
+---
+
+## 17. Rule
 
 A GitHub Issue created from the plan is not a PASS.
 
@@ -963,7 +1129,9 @@ PASS still requires:
 - implementation;
 - tests;
 - typecheck;
+- build when applicable;
 - proof;
-- report or pasted output.
+- report or pasted output;
+- CTO verification.
 
 VERIFIED ≠ DECLARED.

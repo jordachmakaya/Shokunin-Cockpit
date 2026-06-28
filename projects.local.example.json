@@ -1,0 +1,13 @@
+{
+  "projects": [
+    {
+      "id": "sample-project",
+      "name": "Sample Project",
+      "rootPath": "fixtures/sample-project",
+      "currentStatePath": "fixtures/sample-project/CURRENT_STATE.md",
+      "nextActionPath": "fixtures/sample-project/NEXT_ACTION.md",
+      "handoffPath": "fixtures/sample-project/HANDOFF.md",
+      "planPath": "fixtures/sample-project/PLAN.md"
+    }
+  ]
+}
