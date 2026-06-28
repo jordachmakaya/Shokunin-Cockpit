@@ -39,5 +39,10 @@
     "typescript": "^6.0.3",
     "vitest": "^4.1.9",
     "vue-tsc": "^3.3.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "js-yaml": "^4.2.0"
+    }
   }
 }

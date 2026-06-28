@@ -6,6 +6,17 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/eslint'],
   css: ['~/assets/css/main.css'],
+  routeRules: {
+    '/**': {
+      headers: {
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        'X-XSS-Protection': '1; mode=block',
+      },
+    },
+  },
   vite: { plugins: [tailwindcss()] },
   eslint: {
     config: {
