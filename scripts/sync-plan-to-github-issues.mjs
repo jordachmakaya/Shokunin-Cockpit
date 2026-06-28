@@ -1020,7 +1020,9 @@ function getRepoSlug() {
     return httpsMatch[1]
   }
 
-  fail(`Could not infer GitHub repo from origin remote: ${output}`)
+  // Sanitize the output to remove potential tokens or passwords before failing
+  const sanitizedOutput = output.replace(/:[^@/]+@/, ':***@')
+  fail(`Could not infer GitHub repo from origin remote: ${sanitizedOutput}`)
 }
 
 function runGit(args) {
