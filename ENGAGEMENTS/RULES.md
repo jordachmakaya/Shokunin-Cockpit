@@ -4,7 +4,7 @@
 > doctrine (production-ready, strict types, deliberate errors, zero-trust input, no secrets,
 > redacted logging) is owned by the **`engineering-rules`** skill; external-call resilience
 > by **`api-resilience`**; testing by **`test-patterns`**. Do **not** restate them here —
-> this file records only what is true for *this* project. If this file and a skill conflict,
+> this file records only what is true for _this_ project. If this file and a skill conflict,
 > the skill's generic bar still applies; this file narrows it.
 >
 > Rewritten 2026-06-24 for the cockpit (was borrowed from the index-ai portfolio, which had
@@ -44,8 +44,8 @@ The durable files come from **outside this repo** — treat **all frontmatter as
 
 A gate renders **VERIFIED** only if `verified === true` **and** its `proof` path resolves on
 disk. Otherwise it renders **DECLARED / UNVERIFIED**. This decision is computed **server-side**
-(not in the component) and is **unit-tested**. The cockpit must never show a *declared* status
-as *verified*.
+(not in the component) and is **unit-tested**. The cockpit must never show a _declared_ status
+as _verified_.
 
 ## 5. Nuxt server routes
 

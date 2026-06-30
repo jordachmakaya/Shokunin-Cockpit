@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +39,38 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  it('returns invalid for non-md files', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'PLAN.txt'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toBe('only .md files are allowed')
+    }
+  })
+
+  it('returns invalid for sensitive paths', async () => {
+    const result = await readDurable(
+      join(FIXTURES, '.git/config.md'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toBe('access to sensitive path is denied')
+    }
+  })
+
+  it('returns invalid for .env files', async () => {
+    const result = await readDurable(
+      join(FIXTURES, '.env.production.md'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toBe('access to sensitive path is denied')
+    }
   })
 })
