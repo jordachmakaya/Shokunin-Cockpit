@@ -22,6 +22,7 @@
     "@tailwindcss/vite": "^4.3.1",
     "eslint": "^10.5.0",
     "gray-matter": "^4.0.3",
+    "js-yaml": "^4.2.0",
     "nuxt": "^4.4.8",
     "tailwindcss": "^4.3.1",
     "vue": "^3.5.38",
@@ -39,10 +40,5 @@
     "typescript": "^6.0.3",
     "vitest": "^4.1.9",
     "vue-tsc": "^3.3.5"
-  },
-  "pnpm": {
-    "overrides": {
-      "js-yaml": "^4.2.0"
-    }
   }
 }
