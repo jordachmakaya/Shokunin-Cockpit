@@ -39,4 +39,40 @@ describe('readDurable', () => {
     )
     expect(result.status).toBe('missing')
   })
+
+  it('rejects non-markdown files', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'package.json'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('only .md files allowed')
+  })
+
+  it('rejects sensitive paths (node_modules)', async () => {
+    const result = await readDurable(
+      'some/project/node_modules/config.md',
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('sensitive paths blocked')
+  })
+
+  it('rejects sensitive paths (.git)', async () => {
+    const result = await readDurable(
+      'some/project/.git/config.md',
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('sensitive paths blocked')
+  })
+
+  it('rejects sensitive paths (.env)', async () => {
+    const result = await readDurable(
+      'some/project/.env.local.md',
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('sensitive paths blocked')
+  })
 })
