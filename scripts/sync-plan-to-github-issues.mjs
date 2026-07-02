@@ -435,7 +435,7 @@ function runStatus(context) {
 }
 
 function buildStatusReport(context) {
-  const taskStatuses = context.plan.tasks.map(task => {
+  const taskStatuses = context.plan.tasks.map((task) => {
     const issues = context.issueIndex.byTaskId.get(task.id) ?? []
     return buildTaskStatus(task, issues)
   })

@@ -305,10 +305,10 @@ Use this format:
 
 ## Locked decisions (do not relitigate)
 
-| #  | Decision | Rationale |
-|----|----------|-----------|
-| Q1 | **Stack**: ... | ... |
-| Q2 | **Data contract**: ... | ... |
+| #   | Decision               | Rationale |
+| --- | ---------------------- | --------- |
+| Q1  | **Stack**: ...         | ...       |
+| Q2  | **Data contract**: ... | ...       |
 
 ---
 
@@ -318,9 +318,9 @@ Use this format:
 - **Scope:** What is included in this sprint.
 - **Tasks:**
   - `T0.1` First task title and details.
-    *(budget: small, session-fit: yes)*
+    _(budget: small, session-fit: yes)_
   - `T0.2` Second task title and details.
-    *(budget: small, session-fit: yes)*
+    _(budget: small, session-fit: yes)_
 - **Tests:** What must be tested.
 - **Stop-check (VERIFIED):** What proof must be pasted before PASS.
 - **Handoff:** What the next session should pick up.
@@ -331,9 +331,9 @@ Use this format:
 - **Scope:** What is included in this sprint.
 - **Tasks:**
   - `T1.1` First task title and details.
-    *(budget: small, session-fit: yes)*
+    _(budget: small, session-fit: yes)_
   - `T1.2` Second task title and details.
-    *(budget: small, session-fit: yes)*
+    _(budget: small, session-fit: yes)_
 - **Tests:** What must be tested.
 - **Stop-check (VERIFIED):** What proof must be pasted before PASS.
 - **Handoff:** What the next session should pick up.
@@ -349,7 +349,9 @@ Each sprint must use an H2 heading:
 
 ```md
 ## S0 — Contract & fixtures
+
 ## S1 — Read-only project view
+
 ## S2 — Health & honesty
 ```
 
@@ -363,7 +365,9 @@ Avoid:
 
 ```md
 ### S0
+
 # Sprint 0
+
 ## Sprint S0
 ```
 
@@ -381,9 +385,9 @@ Examples:
 
 ```md
 - `T0.1` Scaffold Nuxt + TypeScript strict + pnpm.
-  *(budget: ~7 files, session-fit: yes)*
+  _(budget: ~7 files, session-fit: yes)_
 - `T0.2` Zod schemas: `projectConfig`, `currentState`, `nextAction`, `handoff`, `plan`.
-  *(budget: ~5 schema files, session-fit: yes)*
+  _(budget: ~5 schema files, session-fit: yes)_
 ```
 
 Valid task IDs:
@@ -415,7 +419,7 @@ Example:
 ```md
 - `T1.2` `server/api/projects/[id]/summary.get.ts`: aggregate currentState,
   nextAction, handoff, and plan gates into one typed view model.
-  *(budget: ~2 files, session-fit: yes)*
+  _(budget: ~2 files, session-fit: yes)_
 ```
 
 The generated issue title still comes from the first task line.

@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +39,32 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  it('blocks non-markdown files (security violation)', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'package.json'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('Security violation: only .md files are allowed')
+  })
+
+  it('blocks sensitive paths like .git (security violation)', async () => {
+    const result = await readDurable(
+      '/path/to/.git/config.md',
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('Security violation: access to sensitive path blocked')
+  })
+
+  it('blocks paths containing .env (security violation)', async () => {
+    const result = await readDurable(
+      '/path/to/.env.production.md',
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('Security violation: access to sensitive path blocked')
   })
 })
