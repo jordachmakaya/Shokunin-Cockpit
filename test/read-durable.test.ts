@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +39,38 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  it('rejects paths with traversal', async () => {
+    const result = await readDurable(
+      `${FIXTURES}/../../something.md`,
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toContain('Security constraint: forbidden path')
+    }
+  })
+
+  it('rejects non-markdown files', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'package.json'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toContain('Security constraint: only .md files allowed')
+    }
+  })
+
+  it('rejects sensitive directories', async () => {
+    const result = await readDurable(
+      join(process.cwd(), '.git/config'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toContain('Security constraint: forbidden path')
+    }
   })
 })

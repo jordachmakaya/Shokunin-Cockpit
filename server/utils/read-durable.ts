@@ -1,29 +1,51 @@
-import { readFile } from 'node:fs/promises'
 import matter from 'gray-matter'
+import yaml from 'js-yaml'
+import { readFile } from 'node:fs/promises'
 import type { ZodType } from 'zod'
+
 import { FileReadError } from '../errors/file-read-error'
 
-export type DurableResult<T> =
-  | { status: 'ok', data: T, body: string }
-  | { status: 'missing' }
-  | { status: 'invalid', error: string }
+export type DurableResult<T>
+  = | { status: 'ok', data: T, body: string }
+    | { status: 'missing' }
+    | { status: 'invalid', error: string }
 
 export async function readDurable<T>(
   absPath: string,
   schema: ZodType<T>,
 ): Promise<DurableResult<T>> {
+  // Security: block traversal and sensitive locations
+  if (
+    absPath.includes('..')
+    || absPath.includes('.git')
+    || absPath.includes('node_modules')
+    || absPath.includes('.env')
+  ) {
+    return { status: 'invalid', error: 'Security constraint: forbidden path' }
+  }
+
+  // Security: restrict to markdown
+  if (!absPath.endsWith('.md')) {
+    return { status: 'invalid', error: 'Security constraint: only .md files allowed' }
+  }
+
   let raw: string
   try {
     raw = await readFile(absPath, 'utf8')
   }
   catch (err) {
-    if (isEnoent(err)) return { status: 'missing' }
+    if (isEnoent(err))
+      return { status: 'missing' }
     throw new FileReadError(absPath, { cause: err })
   }
 
   let parsed
   try {
-    parsed = matter(raw)
+    parsed = matter(raw, {
+      engines: {
+        yaml: s => yaml.load(s) as object,
+      },
+    })
   }
   catch (err) {
     return { status: 'invalid', error: `frontmatter parse error: ${String(err)}` }
