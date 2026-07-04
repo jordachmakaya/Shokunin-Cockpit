@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +39,32 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  it('returns invalid for path traversal attempt', async () => {
+    const result = await readDurable(
+      join(FIXTURES, '..', '..', 'package.json'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('path security violation')
+  })
+
+  it('returns invalid for non-markdown files', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'project.json'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('invalid extension')
+  })
+
+  it('blocks access to .env files', async () => {
+    const result = await readDurable(
+      join(FIXTURES, '.env.md'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(result.error).toContain('path security violation')
   })
 })
