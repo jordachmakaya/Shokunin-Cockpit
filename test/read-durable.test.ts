@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +39,51 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  describe('security checks', () => {
+    it('rejects path traversal', async () => {
+      const result = await readDurable(
+        join(FIXTURES, '..', '..', 'package.json'),
+        {} as any,
+      )
+      expect(result.status).toBe('invalid')
+      if (result.status === 'invalid') {
+        expect(result.error).toContain('Forbidden path')
+      }
+    })
+
+    it('rejects sensitive files (.env)', async () => {
+      const result = await readDurable(
+        join(FIXTURES, '.env'),
+        {} as any,
+      )
+      expect(result.status).toBe('invalid')
+      if (result.status === 'invalid') {
+        expect(result.error).toContain('Forbidden path')
+      }
+    })
+
+    it('rejects non-markdown files', async () => {
+      const result = await readDurable(
+        join(FIXTURES, 'package.json'),
+        {} as any,
+      )
+      expect(result.status).toBe('invalid')
+      if (result.status === 'invalid') {
+        expect(result.error).toContain('Forbidden path')
+      }
+    })
+
+    it('rejects .git paths', async () => {
+      const result = await readDurable(
+        join(FIXTURES, '.git/config'),
+        {} as any,
+      )
+      expect(result.status).toBe('invalid')
+      if (result.status === 'invalid') {
+        expect(result.error).toContain('Forbidden path')
+      }
+    })
   })
 })
