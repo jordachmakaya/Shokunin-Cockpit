@@ -39,4 +39,37 @@ describe('readDurable', () => {
     )
     expect(result.status).toBe('missing')
   })
+
+  it('blocks path traversal', async () => {
+    const result = await readDurable(
+      FIXTURES + '/../sample-project/CURRENT_STATE.md',
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toContain('Path traversal attempt detected')
+    }
+  })
+
+  it('blocks sensitive files', async () => {
+    const result = await readDurable(
+      '/app/.env.md', // Fake .md extension but contains .env
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toContain('Access to sensitive path blocked')
+    }
+  })
+
+  it('blocks non-markdown files', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'package.json'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toContain('Only Markdown files (.md) can be read')
+    }
+  })
 })
