@@ -1,7 +1,7 @@
 # BRAND_SPEC.md — Shokunin Cockpit (V2, enterprise product system)
 
 > **V2, 2026-06-24.** Product designer pass over the owner's V1 brand. The V1 sheet was an
-> *editorial* identity for **index-ai** (warm paper, single teal, Lora display). This V2 keeps
+> _editorial_ identity for **index-ai** (warm paper, single teal, Lora display). This V2 keeps
 > the owner's DNA — **warm paper + teal, flat, calm, confident** — and turns it into a
 > **dual light/dark product design system** for a control surface: a real type scale, a full
 > button hierarchy with states, status semantics built for `VERIFIED ≠ DECLARED`, and tokens
@@ -16,7 +16,7 @@
 
 A **calm control surface for AI-assisted work**. Editorial restraint (lots of whitespace, flat,
 no neon) meets cockpit legibility (dense data, monospace numerals, unmistakable status). The
-feeling: *quiet, exact, trustworthy* — software that proves rather than declares.
+feeling: _quiet, exact, trustworthy_ — software that proves rather than declares.
 
 ---
 
@@ -24,70 +24,70 @@ feeling: *quiet, exact, trustworthy* — software that proves rather than declar
 
 Anchor `#1C6E6A` = **teal-600 = primary**. Everything else is a tint/shade of it.
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| teal-50  | `#EEF6F5` | faint wash, hovered ghost bg (light) |
-| teal-100 | `#D6EAE7` | selected/active subtle bg (light) |
-| teal-200 | `#AFD6D1` | soft borders on teal fills |
-| teal-300 | `#80BBB4` | teal text/links on **dark** |
-| teal-400 | `#4E9A92` | accents on dark; secondary border (dark) |
-| teal-500 | `#2C7F78` | focus ring base; in-progress; primary on dark |
+| Token        | Hex           | Use                                              |
+| ------------ | ------------- | ------------------------------------------------ |
+| teal-50      | `#EEF6F5`     | faint wash, hovered ghost bg (light)             |
+| teal-100     | `#D6EAE7`     | selected/active subtle bg (light)                |
+| teal-200     | `#AFD6D1`     | soft borders on teal fills                       |
+| teal-300     | `#80BBB4`     | teal text/links on **dark**                      |
+| teal-400     | `#4E9A92`     | accents on dark; secondary border (dark)         |
+| teal-500     | `#2C7F78`     | focus ring base; in-progress; primary on dark    |
 | **teal-600** | **`#1C6E6A`** | **primary buttons, key numerals, active accent** |
-| teal-700 | `#155E5A` | primary hover; link text (light) |
-| teal-800 | `#134E4A` | primary pressed; heading on teal fill |
-| teal-900 | `#103F3C` | deep teal panels |
-| teal-950 | `#0A2A28` | teal surface tint on dark |
+| teal-700     | `#155E5A`     | primary hover; link text (light)                 |
+| teal-800     | `#134E4A`     | primary pressed; heading on teal fill            |
+| teal-900     | `#103F3C`     | deep teal panels                                 |
+| teal-950     | `#0A2A28`     | teal surface tint on dark                        |
 
 ## 3. Color — warm neutral ramp (carries the paper DNA)
 
 Warm-tinted grays, anchored on the owner's paper `#F4F3EE` and ink `#191919`.
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| neutral-0   | `#FFFFFF` | cards (light) |
+| Token       | Hex       | Use                                     |
+| ----------- | --------- | --------------------------------------- |
+| neutral-0   | `#FFFFFF` | cards (light)                           |
 | neutral-50  | `#F7F6F2` | app background (light) — the warm paper |
-| neutral-100 | `#EDEBE3` | alt surface / table header (light) |
-| neutral-200 | `#E3E0D8` | borders / dividers (light) |
-| neutral-300 | `#D3CFC4` | strong divider, disabled border |
-| neutral-400 | `#A8A498` | faint labels, disabled text |
-| neutral-500 | `#807C70` | placeholder, eyebrow |
-| neutral-600 | `#6B6960` | muted body text (light) |
-| neutral-700 | `#4B493F` | secondary text |
-| neutral-800 | `#3F3E39` | body text (light) |
-| neutral-900 | `#26251F` | strong text |
-| neutral-950 | `#191919` | headings / primary ink (light) |
+| neutral-100 | `#EDEBE3` | alt surface / table header (light)      |
+| neutral-200 | `#E3E0D8` | borders / dividers (light)              |
+| neutral-300 | `#D3CFC4` | strong divider, disabled border         |
+| neutral-400 | `#A8A498` | faint labels, disabled text             |
+| neutral-500 | `#807C70` | placeholder, eyebrow                    |
+| neutral-600 | `#6B6960` | muted body text (light)                 |
+| neutral-700 | `#4B493F` | secondary text                          |
+| neutral-800 | `#3F3E39` | body text (light)                       |
+| neutral-900 | `#26251F` | strong text                             |
+| neutral-950 | `#191919` | headings / primary ink (light)          |
 
 ## 4. Color — dark theme surfaces (warm charcoal, never pure black)
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| dark-bg       | `#131310` | app background (dark) |
-| dark-surface  | `#1B1B17` | cards (dark) |
-| dark-surface-2| `#232320` | table header, insets (dark) |
-| dark-elevated | `#2B2B26` | popovers/menus (dark) |
-| dark-border   | `#34332C` | hairline borders (dark) |
-| dark-border-2 | `#45443B` | strong border (dark) |
-| dark-text     | `#ECEAE1` | primary text (dark) |
-| dark-text-muted | `#A8A496` | muted text (dark) |
-| dark-faint    | `#75736A` | faint labels (dark) |
+| Token           | Hex       | Use                         |
+| --------------- | --------- | --------------------------- |
+| dark-bg         | `#131310` | app background (dark)       |
+| dark-surface    | `#1B1B17` | cards (dark)                |
+| dark-surface-2  | `#232320` | table header, insets (dark) |
+| dark-elevated   | `#2B2B26` | popovers/menus (dark)       |
+| dark-border     | `#34332C` | hairline borders (dark)     |
+| dark-border-2   | `#45443B` | strong border (dark)        |
+| dark-text       | `#ECEAE1` | primary text (dark)         |
+| dark-text-muted | `#A8A496` | muted text (dark)           |
+| dark-faint      | `#75736A` | faint labels (dark)         |
 
 ## 5. Color — status semantics (status ONLY, never brand decoration)
 
 Carries the owner's rule forward: green/red are status, not decor. V2 adds **amber** — also
-**status-only** — because a control surface needs a third signal: *claimed-but-not-proven*.
+**status-only** — because a control surface needs a third signal: _claimed-but-not-proven_.
 Amber is **not** a brand accent; it never appears as decoration.
 
-| Role | Light fg | Light tint bg | Dark fg | Dark tint bg | Meaning in the cockpit |
-|------|----------|---------------|---------|--------------|------------------------|
-| **success** | `#0F9E6E` (text `#0A3D2E`) | `#E5F5EF` | `#34D399` | `#0F2D24` | **VERIFIED** gate · project `done` |
-| **warning** | `#B8740A` (text `#6E430A`) | `#FBF1DF` | `#F0B24A` | `#2E2410` | **DECLARED / UNVERIFIED** gate · stale |
-| **error**   | `#D6362F` (text `#7A211C`) | `#FBE9E8` | `#F87171` | `#2E1714` | **BLOCKED** gate · invalid file |
-| **info/brand** | `#155E5A` | `#EEF6F5` | `#80BBB4` | `#0A2A28` | **IN-PROGRESS** · active sprint |
-| **neutral** | `#6B6960` | `#EDEBE3` | `#A8A496` | `#232320` | **TODO / not started** · missing |
+| Role           | Light fg                   | Light tint bg | Dark fg   | Dark tint bg | Meaning in the cockpit                 |
+| -------------- | -------------------------- | ------------- | --------- | ------------ | -------------------------------------- |
+| **success**    | `#0F9E6E` (text `#0A3D2E`) | `#E5F5EF`     | `#34D399` | `#0F2D24`    | **VERIFIED** gate · project `done`     |
+| **warning**    | `#B8740A` (text `#6E430A`) | `#FBF1DF`     | `#F0B24A` | `#2E2410`    | **DECLARED / UNVERIFIED** gate · stale |
+| **error**      | `#D6362F` (text `#7A211C`) | `#FBE9E8`     | `#F87171` | `#2E1714`    | **BLOCKED** gate · invalid file        |
+| **info/brand** | `#155E5A`                  | `#EEF6F5`     | `#80BBB4` | `#0A2A28`    | **IN-PROGRESS** · active sprint        |
+| **neutral**    | `#6B6960`                  | `#EDEBE3`     | `#A8A496` | `#232320`    | **TODO / not started** · missing       |
 
 > Gate-state map (the honesty rule made visual): VERIFIED = success · DECLARED = **amber** ·
 > BLOCKED = error · IN-PROGRESS = teal · TODO/missing = neutral. Five visually distinct states;
-> a *declared* gate can never be mistaken for a *verified* one.
+> a _declared_ gate can never be mistaken for a _verified_ one.
 
 ---
 
@@ -101,17 +101,17 @@ Keep the owner's three families; assign them product roles.
 - **Lora** (serif) — **reserved for marketing/editorial surfaces only** (landing, portfolio),
   **not** the cockpit chrome. Keeps brand lineage without making the product feel like a blog.
 
-| Style | Font | Size / line | Weight | Tracking |
-|-------|------|-------------|--------|----------|
-| Display | Inter | 32 / 40 | 600 | -0.02em |
-| H1 | Inter | 24 / 32 | 600 | -0.02em |
-| H2 | Inter | 20 / 28 | 600 | -0.01em |
-| H3 | Inter | 16 / 24 | 600 | 0 |
-| Body-lg | Inter | 15 / 24 | 400 | 0 |
-| **Body (base)** | Inter | **14 / 22** | 400 | 0 |
-| Small | Inter | 13 / 20 | 400 | 0 |
-| Caption/eyebrow | Inter | 12 / 16 | 500 | 0.06em · UPPERCASE |
-| Mono/data | JetBrains Mono | 13 / 20 | 400–500 | 0 |
+| Style           | Font           | Size / line | Weight  | Tracking           |
+| --------------- | -------------- | ----------- | ------- | ------------------ |
+| Display         | Inter          | 32 / 40     | 600     | -0.02em            |
+| H1              | Inter          | 24 / 32     | 600     | -0.02em            |
+| H2              | Inter          | 20 / 28     | 600     | -0.01em            |
+| H3              | Inter          | 16 / 24     | 600     | 0                  |
+| Body-lg         | Inter          | 15 / 24     | 400     | 0                  |
+| **Body (base)** | Inter          | **14 / 22** | 400     | 0                  |
+| Small           | Inter          | 13 / 20     | 400     | 0                  |
+| Caption/eyebrow | Inter          | 12 / 16     | 500     | 0.06em · UPPERCASE |
+| Mono/data       | JetBrains Mono | 13 / 20     | 400–500 | 0                  |
 
 ---
 
@@ -133,14 +133,14 @@ Keep the owner's three families; assign them product roles.
 Icon-only = square (28/36/44). Radius md(6). Gap 8. Loading = spinner replaces leading icon,
 label dims, pointer-events off.
 
-| Variant | When to use | Light: rest → hover → active | Disabled |
-|---------|-------------|------------------------------|----------|
-| **Primary** | The single main action of a view | bg `teal-600` / white → `teal-700` → `teal-800` | bg `neutral-200`, text `neutral-400` |
-| **Secondary** | Alt to primary, still brand | transparent, border `teal-600`, text `teal-700` → bg `teal-50` → bg `teal-100` | border `neutral-200`, text `neutral-400` |
-| **Tertiary** (neutral) | Non-brand actions (Cancel, filter) | bg `neutral-0`, border `neutral-200`, text `neutral-800` → bg `neutral-50` → bg `neutral-100` | border `neutral-200`, text `neutral-400` |
-| **Ghost** | Toolbar / inline / icon | no bg/border, text `teal-700` → bg `teal-50` → bg `teal-100` | text `neutral-400` |
-| **Destructive** | Irreversible (rare in read-only V1) | bg `error-500` / white → `error-600` → `error-deep`. Outline form: border/text `error` | bg `neutral-200`, text `neutral-400` |
-| **Link** | Inline navigation | text `teal-700`, underline on hover | text `neutral-400` |
+| Variant                | When to use                         | Light: rest → hover → active                                                                  | Disabled                                 |
+| ---------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **Primary**            | The single main action of a view    | bg `teal-600` / white → `teal-700` → `teal-800`                                               | bg `neutral-200`, text `neutral-400`     |
+| **Secondary**          | Alt to primary, still brand         | transparent, border `teal-600`, text `teal-700` → bg `teal-50` → bg `teal-100`                | border `neutral-200`, text `neutral-400` |
+| **Tertiary** (neutral) | Non-brand actions (Cancel, filter)  | bg `neutral-0`, border `neutral-200`, text `neutral-800` → bg `neutral-50` → bg `neutral-100` | border `neutral-200`, text `neutral-400` |
+| **Ghost**              | Toolbar / inline / icon             | no bg/border, text `teal-700` → bg `teal-50` → bg `teal-100`                                  | text `neutral-400`                       |
+| **Destructive**        | Irreversible (rare in read-only V1) | bg `error-500` / white → `error-600` → `error-deep`. Outline form: border/text `error`        | bg `neutral-200`, text `neutral-400`     |
+| **Link**               | Inline navigation                   | text `teal-700`, underline on hover                                                           | text `neutral-400`                       |
 
 **Dark mappings:** Primary `bg teal-500` / text `#06201E`, hover `teal-400`. Secondary `border
 teal-400` / text `teal-300`, hover bg `teal-950`. Tertiary `bg dark-surface-2` / border
@@ -164,25 +164,41 @@ teal-400` / text `teal-300`, hover bg `teal-950`. Tertiary `bg dark-surface-2` /
 ## 10. Tailwind v4 `@theme` (S3 — paste target for `app/assets/css/main.css`)
 
 ```css
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* brand */
-  --color-teal-50:#EEF6F5; --color-teal-100:#D6EAE7; --color-teal-200:#AFD6D1;
-  --color-teal-300:#80BBB4; --color-teal-400:#4E9A92; --color-teal-500:#2C7F78;
-  --color-teal-600:#1C6E6A; --color-teal-700:#155E5A; --color-teal-800:#134E4A;
-  --color-teal-900:#103F3C; --color-teal-950:#0A2A28;
+  --color-teal-50: #eef6f5;
+  --color-teal-100: #d6eae7;
+  --color-teal-200: #afd6d1;
+  --color-teal-300: #80bbb4;
+  --color-teal-400: #4e9a92;
+  --color-teal-500: #2c7f78;
+  --color-teal-600: #1c6e6a;
+  --color-teal-700: #155e5a;
+  --color-teal-800: #134e4a;
+  --color-teal-900: #103f3c;
+  --color-teal-950: #0a2a28;
   /* warm neutrals */
-  --color-neutral-50:#F7F6F2; --color-neutral-100:#EDEBE3; --color-neutral-200:#E3E0D8;
-  --color-neutral-300:#D3CFC4; --color-neutral-400:#A8A498; --color-neutral-500:#807C70;
-  --color-neutral-600:#6B6960; --color-neutral-700:#4B493F; --color-neutral-800:#3F3E39;
-  --color-neutral-900:#26251F; --color-neutral-950:#191919;
+  --color-neutral-50: #f7f6f2;
+  --color-neutral-100: #edebe3;
+  --color-neutral-200: #e3e0d8;
+  --color-neutral-300: #d3cfc4;
+  --color-neutral-400: #a8a498;
+  --color-neutral-500: #807c70;
+  --color-neutral-600: #6b6960;
+  --color-neutral-700: #4b493f;
+  --color-neutral-800: #3f3e39;
+  --color-neutral-900: #26251f;
+  --color-neutral-950: #191919;
   /* status (status-only) */
-  --color-success:#0F9E6E; --color-warning:#B8740A; --color-error:#D6362F;
+  --color-success: #0f9e6e;
+  --color-warning: #b8740a;
+  --color-error: #d6362f;
   /* type + radius */
-  --font-sans:"Inter",ui-sans-serif,system-ui,sans-serif;
-  --font-mono:"JetBrains Mono",ui-monospace,monospace;
-  --radius-DEFAULT:6px;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --radius-DEFAULT: 6px;
 }
 ```
 
@@ -195,7 +211,7 @@ toggled by the cockpit; respects `prefers-color-scheme` as the default.
 
 - One brand hue: **teal**. Everything else is neutral or status. No second decorative color.
 - Flat surfaces; elevation only for floating layers. No gradients, no neon.
-- Green/amber/red appear **only** as status. Amber = *declared/unverified/stale*, never decor.
+- Green/amber/red appear **only** as status. Amber = _declared/unverified/stale_, never decor.
 - Generous whitespace; mono for data/IDs; Inter for UI; Lora for marketing only.
 - Every interactive element has a **visible focus state** and AA contrast.
 

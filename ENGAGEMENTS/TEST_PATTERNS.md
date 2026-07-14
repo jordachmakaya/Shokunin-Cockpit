@@ -3,7 +3,7 @@
 > **Scope.** Project-specific testing layer only. The generic method (behavior-first, test at
 > the right level, mock only at the boundary, deterministic, assert exactly, no PASS on prose)
 > is owned by the **`test-patterns`** skill — don't restate it here. This file records what
-> *this* project tests and how. Rewritten 2026-06-24 for the cockpit (was borrowed from the
+> _this_ project tests and how. Rewritten 2026-06-24 for the cockpit (was borrowed from the
 > index-ai portfolio: book forms, Twenty CRM, PostHog, llms.txt — none of which exist here).
 
 ## What breaks if the code is wrong (the question every test answers)
