@@ -1,3 +1,5 @@
+overrides:
+  js-yaml: ^4.2.0
 onlyBuiltDependencies:
   - '@parcel/watcher@2.5.6'
   - esbuild@0.27.7
