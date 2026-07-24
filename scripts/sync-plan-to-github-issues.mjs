@@ -111,7 +111,7 @@ function buildPlan(content) {
 }
 
 function parsePlan(content) {
-  const sprintHeadingRegex = /^##\s+(S\d+)\s+[—-]\s+(.+)$/gm
+  const sprintHeadingRegex = /^##[ \t]+(S\d+)[ \t]+[—-][ \t]+([^ \t].*)$/gm
   const sprintMatches = [...content.matchAll(sprintHeadingRegex)]
 
   return sprintMatches.map((match, index) => {
@@ -205,7 +205,7 @@ function isTaskStart(line) {
 
 function buildTask(taskBlock, sprintContext) {
   const firstLine = requiredMatch(taskBlock.split('\n')[0], 'task first line')
-  const match = firstLine.match(/^\s*-\s+`(T\d+\.\d+)`\s+(.+)$/)
+  const match = firstLine.match(/^[ \t]*-[ \t]+`(T\d+\.\d+)`[ \t]+([^ \t].*)$/)
 
   if (!match?.[1] || !match?.[2]) {
     fail(`Invalid task format: ${firstLine}`)
@@ -435,7 +435,7 @@ function runStatus(context) {
 }
 
 function buildStatusReport(context) {
-  const taskStatuses = context.plan.tasks.map(task => {
+  const taskStatuses = context.plan.tasks.map((task) => {
     const issues = context.issueIndex.byTaskId.get(task.id) ?? []
     return buildTaskStatus(task, issues)
   })
@@ -1015,7 +1015,7 @@ function getRepoSlug() {
     return sshMatch[1]
   }
 
-  const httpsMatch = output.match(/github\.com[:/](.+?\/.+?)(?:\.git)?$/)
+  const httpsMatch = output.match(/github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/)
   if (httpsMatch?.[1]) {
     return httpsMatch[1]
   }
