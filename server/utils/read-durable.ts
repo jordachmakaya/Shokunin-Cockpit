@@ -1,12 +1,14 @@
-import { readFile } from 'node:fs/promises'
 import matter from 'gray-matter'
+import yaml from 'js-yaml'
+import { readFile } from 'node:fs/promises'
 import type { ZodType } from 'zod'
-import { FileReadError } from '../errors/file-read-error'
 
-export type DurableResult<T> =
-  | { status: 'ok', data: T, body: string }
-  | { status: 'missing' }
-  | { status: 'invalid', error: string }
+import { validatePath } from './path-validator'
+
+export type DurableResult<T>
+  = | { status: 'ok', data: T, body: string }
+    | { status: 'missing' }
+    | { status: 'invalid', error: string }
 
 export async function readDurable<T>(
   absPath: string,
@@ -14,16 +16,27 @@ export async function readDurable<T>(
 ): Promise<DurableResult<T>> {
   let raw: string
   try {
+    if (!validatePath(absPath)) {
+      return { status: 'invalid', error: 'Invalid file path' }
+    }
     raw = await readFile(absPath, 'utf8')
   }
   catch (err) {
-    if (isEnoent(err)) return { status: 'missing' }
-    throw new FileReadError(absPath, { cause: err })
+    if (isEnoent(err))
+      return { status: 'missing' }
+    return { status: 'invalid', error: `Failed to read file: ${err instanceof Error ? err.message : String(err)}` }
   }
 
   let parsed
   try {
-    parsed = matter(raw)
+    parsed = matter(raw, {
+      engines: {
+        yaml: {
+          parse: (s: string) => yaml.load(s) as object,
+          stringify: (obj: object) => yaml.dump(obj),
+        },
+      },
+    })
   }
   catch (err) {
     return { status: 'invalid', error: `frontmatter parse error: ${String(err)}` }
