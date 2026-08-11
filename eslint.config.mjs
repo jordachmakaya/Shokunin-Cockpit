@@ -18,6 +18,7 @@ export default withNuxt(
             '.pnpm-store/',
             'libs/migrations/*',
             'libs/migrations/meta/*.json',
+            'ENGAGEMENTS/**',
         ],
     }, {
         rules: {
