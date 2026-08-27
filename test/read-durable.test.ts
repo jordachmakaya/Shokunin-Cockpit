@@ -1,7 +1,9 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
+import { FileReadError } from '../server/errors/file-read-error'
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +40,13 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+})
+
+describe('fileReadError', () => {
+  it('redacts absolute filesystem paths', () => {
+    const err = new FileReadError('/secret/path/to/private-file.md')
+    expect(err.message).toBe('Failed to read file: private-file.md')
+    expect(err.message).not.toContain('/secret/path/to/')
   })
 })
