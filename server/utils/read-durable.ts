@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import matter from 'gray-matter'
+import yaml from 'js-yaml'
 import type { ZodType } from 'zod'
 import { FileReadError } from '../errors/file-read-error'
 
@@ -23,7 +24,13 @@ export async function readDurable<T>(
 
   let parsed
   try {
-    parsed = matter(raw)
+    parsed = matter(raw, {
+      engines: {
+        yaml: {
+          parse: (s: string) => yaml.load(s) as object,
+        },
+      },
+    })
   }
   catch (err) {
     return { status: 'invalid', error: `frontmatter parse error: ${String(err)}` }
