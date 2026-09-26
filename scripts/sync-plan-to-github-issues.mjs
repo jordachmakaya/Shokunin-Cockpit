@@ -111,7 +111,7 @@ function buildPlan(content) {
 }
 
 function parsePlan(content) {
-  const sprintHeadingRegex = /^##\s+(S\d+)\s+[—-]\s+(.+)$/gm
+  const sprintHeadingRegex = /^##[ \t]+(S\d+)[ \t]+[—-][ \t]+(\S.*)$/gm
   const sprintMatches = [...content.matchAll(sprintHeadingRegex)]
 
   return sprintMatches.map((match, index) => {
@@ -169,7 +169,7 @@ function extractTaskSection(block) {
   }
 
   const afterLabel = block.slice(start + label.length)
-  const nextFieldMatch = afterLabel.match(/\n-\s+\*\*[A-Z][^:]+:\*\*/)
+  const nextFieldMatch = afterLabel.match(/\n-[ \t]+\*\*[A-Z][^:]+:\*\*/)
   const end = nextFieldMatch?.index ?? afterLabel.length
 
   return afterLabel.slice(0, end)
@@ -200,12 +200,12 @@ function splitTaskBlocks(taskSection) {
 }
 
 function isTaskStart(line) {
-  return /^\s*-\s+`T\d+\.\d+`\s+/.test(line)
+  return /^[ \t]*-[ \t]+`T\d+\.\d+`[ \t]+/.test(line)
 }
 
 function buildTask(taskBlock, sprintContext) {
   const firstLine = requiredMatch(taskBlock.split('\n')[0], 'task first line')
-  const match = firstLine.match(/^\s*-\s+`(T\d+\.\d+)`\s+(.+)$/)
+  const match = firstLine.match(/^[ \t]*-[ \t]+`(T\d+\.\d+)`[ \t]+(\S.*)$/)
 
   if (!match?.[1] || !match?.[2]) {
     fail(`Invalid task format: ${firstLine}`)
@@ -234,7 +234,7 @@ function cleanTaskBody(taskBlock) {
   const lines = taskBlock.split('\n')
   const normalized = lines.map((line, index) => {
     if (index === 0) {
-      return line.replace(/^\s*-\s+/, '').trim()
+      return line.replace(/^[ \t]*-[ \t]+/, '').trim()
     }
 
     return line.trim()
@@ -254,7 +254,7 @@ function extractField(block, label) {
   }
 
   const afterLabel = block.slice(start + label.length)
-  const nextFieldMatch = afterLabel.match(/\n-\s+\*\*[A-Z][^:]+:\*\*/)
+  const nextFieldMatch = afterLabel.match(/\n-[ \t]+\*\*[A-Z][^:]+:\*\*/)
   const end = nextFieldMatch?.index ?? afterLabel.length
 
   return cleanText(afterLabel.slice(0, end))
@@ -435,7 +435,7 @@ function runStatus(context) {
 }
 
 function buildStatusReport(context) {
-  const taskStatuses = context.plan.tasks.map(task => {
+  const taskStatuses = context.plan.tasks.map((task) => {
     const issues = context.issueIndex.byTaskId.get(task.id) ?? []
     return buildTaskStatus(task, issues)
   })
@@ -982,7 +982,7 @@ function buildMarker(taskId) {
 }
 
 function extractPlanId(body) {
-  const match = body.match(/<!--\s*shokunin-plan-id:(T\d+\.\d+)\s*-->/)
+  const match = body.match(/<!--[ \t]*shokunin-plan-id:(T\d+\.\d+)[ \t]*-->/)
   return match?.[1]
 }
 
@@ -997,13 +997,13 @@ function cleanTaskTitle(rawTask) {
   return cleanText(rawTask)
     .replace(/`/g, '')
     .replace(/\*\*/g, '')
-    .replace(/\s*\(.*$/, '')
+    .replace(/[ \t]*\(.*$/, '')
     .replace(/\.$/, '')
 }
 
 function cleanText(value) {
   return String(value)
-    .replace(/\s+/g, ' ')
+    .replace(/[ \t]+/g, ' ')
     .trim()
 }
 
@@ -1015,7 +1015,7 @@ function getRepoSlug() {
     return sshMatch[1]
   }
 
-  const httpsMatch = output.match(/github\.com[:/](.+?\/.+?)(?:\.git)?$/)
+  const httpsMatch = output.match(/github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/)
   if (httpsMatch?.[1]) {
     return httpsMatch[1]
   }
