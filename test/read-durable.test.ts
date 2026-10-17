@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -27,6 +28,14 @@ describe('readDurable', () => {
   it('returns invalid (not throws) for CURRENT_STATE.broken-yaml.md', async () => {
     const result = await readDurable(
       join(FIXTURES, 'CURRENT_STATE.broken-yaml.md'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+  })
+
+  it('returns invalid (not throws) for non-object frontmatter (e.g. string YAML)', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'CURRENT_STATE.string-yaml.md'),
       currentStateSchema,
     )
     expect(result.status).toBe('invalid')
