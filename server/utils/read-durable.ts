@@ -1,12 +1,14 @@
-import { readFile } from 'node:fs/promises'
 import matter from 'gray-matter'
+import yaml from 'js-yaml'
+import { readFile } from 'node:fs/promises'
 import type { ZodType } from 'zod'
+
 import { FileReadError } from '../errors/file-read-error'
 
-export type DurableResult<T> =
-  | { status: 'ok', data: T, body: string }
-  | { status: 'missing' }
-  | { status: 'invalid', error: string }
+export type DurableResult<T>
+  = | { status: 'ok', data: T, body: string }
+    | { status: 'missing' }
+    | { status: 'invalid', error: string }
 
 export async function readDurable<T>(
   absPath: string,
@@ -17,13 +19,26 @@ export async function readDurable<T>(
     raw = await readFile(absPath, 'utf8')
   }
   catch (err) {
-    if (isEnoent(err)) return { status: 'missing' }
+    if (isEnoent(err))
+      return { status: 'missing' }
     throw new FileReadError(absPath, { cause: err })
   }
 
   let parsed
   try {
-    parsed = matter(raw)
+    // SECURITY / STABILITY: Use explicit js-yaml `load` engine instead of deprecated `safeLoad`
+    // to maintain compatibility with js-yaml 4.x and fail gracefully on empty/invalid frontmatter.
+    parsed = matter(raw, {
+      engines: {
+        yaml: {
+          parse: (s: string) => {
+            const parsedYaml = yaml.load(s)
+            return typeof parsedYaml === 'object' && parsedYaml !== null ? parsedYaml : {}
+          },
+          stringify: yaml.dump,
+        },
+      },
+    })
   }
   catch (err) {
     return { status: 'invalid', error: `frontmatter parse error: ${String(err)}` }
