@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -30,6 +31,17 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('invalid')
+  })
+
+  it('returns invalid (not executes) when encountering javascript frontmatter', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'CURRENT_STATE.javascript.md'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    if (result.status === 'invalid') {
+      expect(result.error).toContain('JavaScript frontmatter is disallowed')
+    }
   })
 
   it('returns missing (not throws) for a non-existent path', async () => {
