@@ -1,9 +1,15 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
+
+declare global {
+  // eslint-disable-next-line vars-on-top
+  var __vulnerable_code_executed: boolean | undefined
+}
 
 describe('readDurable', () => {
   it('returns ok for a valid CURRENT_STATE.md', async () => {
@@ -38,5 +44,15 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  it('rejects JS frontmatter and prevents code execution (RCE defense)', async () => {
+    globalThis.__vulnerable_code_executed = false
+    const result = await readDurable(
+      join(FIXTURES, 'CURRENT_STATE.rce-exploit.md'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect(globalThis.__vulnerable_code_executed).toBe(false)
   })
 })
