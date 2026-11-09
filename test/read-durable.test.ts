@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +39,25 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  it('rejects arbitrary javascript frontmatter execution (prevents RCE)', async () => {
+    const malicious = join(FIXTURES, 'CURRENT_STATE.malicious-js.md')
+    const { writeFile, unlink } = await import('node:fs/promises')
+    await writeFile(
+      malicious,
+      '---js\nthrow new Error("RCE executed")\n---\nbody',
+      'utf8',
+    )
+    try {
+      const result = await readDurable(malicious, currentStateSchema)
+      expect(result.status).toBe('invalid')
+      if (result.status === 'invalid') {
+        expect(result.error).toContain('JavaScript frontmatter execution is disabled')
+      }
+    }
+    finally {
+      await unlink(malicious).catch(() => {})
+    }
   })
 })

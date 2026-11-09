@@ -1,12 +1,14 @@
-import { readFile } from 'node:fs/promises'
 import matter from 'gray-matter'
+import yaml from 'js-yaml'
+import { readFile } from 'node:fs/promises'
 import type { ZodType } from 'zod'
+
 import { FileReadError } from '../errors/file-read-error'
 
-export type DurableResult<T> =
-  | { status: 'ok', data: T, body: string }
-  | { status: 'missing' }
-  | { status: 'invalid', error: string }
+export type DurableResult<T>
+  = { status: 'ok', data: T, body: string }
+    | { status: 'missing' }
+    | { status: 'invalid', error: string }
 
 export async function readDurable<T>(
   absPath: string,
@@ -17,13 +19,27 @@ export async function readDurable<T>(
     raw = await readFile(absPath, 'utf8')
   }
   catch (err) {
-    if (isEnoent(err)) return { status: 'missing' }
+    if (isEnoent(err)) {
+      return { status: 'missing' }
+    }
     throw new FileReadError(absPath, { cause: err })
   }
 
   let parsed
   try {
-    parsed = matter(raw)
+    // gray-matter defaults to yaml.safeLoad (removed in js-yaml 4) and allows JS execution via eval.
+    // Configure custom engines: use safe yaml.load and strictly disable JavaScript frontmatter execution (RCE).
+    parsed = matter(raw, {
+      engines: {
+        yaml: (s: string) => {
+          const loaded = yaml.load(s)
+          return typeof loaded === 'object' && loaded !== null && !Array.isArray(loaded) ? loaded : {}
+        },
+        javascript: () => {
+          throw new Error('JavaScript frontmatter execution is disabled')
+        },
+      },
+    })
   }
   catch (err) {
     return { status: 'invalid', error: `frontmatter parse error: ${String(err)}` }
