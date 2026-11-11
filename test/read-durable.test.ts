@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -30,6 +31,15 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('invalid')
+  })
+
+  it('safely rejects frontmatter attempting JavaScript evaluation (RCE prevention)', async () => {
+    const result = await readDurable(
+      join(FIXTURES, 'CURRENT_STATE.malicious-js.md'),
+      currentStateSchema,
+    )
+    expect(result.status).toBe('invalid')
+    expect((globalThis as unknown as { __malicious_code_executed?: boolean }).__malicious_code_executed).toBeUndefined()
   })
 
   it('returns missing (not throws) for a non-existent path', async () => {
