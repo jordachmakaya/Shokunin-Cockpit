@@ -1,7 +1,9 @@
+import { unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { currentStateSchema } from '../shared/schemas/current-state'
+
 import { readDurable } from '../server/utils/read-durable'
+import { currentStateSchema } from '../shared/schemas/current-state'
 
 const FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'sample-project')
 
@@ -38,5 +40,23 @@ describe('readDurable', () => {
       currentStateSchema,
     )
     expect(result.status).toBe('missing')
+  })
+
+  it('returns invalid when javascript frontmatter execution is attempted', async () => {
+    const maliciousPath = join(FIXTURES, 'CURRENT_STATE.malicious.md')
+    await writeFile(
+      maliciousPath,
+      '---js\n({ projectId: "pwned", status: "in_progress", lastUpdated: "2026-06-24", blocked: false })\n---\nBody content',
+    )
+    try {
+      const result = await readDurable(maliciousPath, currentStateSchema)
+      expect(result.status).toBe('invalid')
+      if (result.status === 'invalid') {
+        expect(result.error).toContain('JavaScript frontmatter execution is disabled')
+      }
+    }
+    finally {
+      await unlink(maliciousPath).catch(() => {})
+    }
   })
 })
